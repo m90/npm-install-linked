@@ -1,0 +1,28 @@
+{
+  "name": "npm-install-linked",
+  "version": "0.0.0",
+  "description": "Install dependencies of linked packages when using npm 7",
+  "bin": {
+    "npm-install-linked": "./cmd.js"
+  },
+  "scripts": {
+    "version": "changes --commits",
+    "postversion": "git push --follow-tags && npm publish --access public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/m90/npm-install-linked.git"
+  },
+  "author": "Frederik Ring <frederik.ring@gmail.com>",
+  "license": "MPL-2.0",
+  "bugs": {
+    "url": "https://github.com/m90/npm-install-linked/issues"
+  },
+  "homepage": "https://github.com/m90/npm-install-linked#readme",
+  "dependencies": {
+    "minimist": "^1.2.5"
+  },
+  "devDependencies": {
+    "@studio/changes": "^2.2.0"
+  }
+}
