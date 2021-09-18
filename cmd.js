@@ -19,7 +19,7 @@ const argv = require('minimist')(process.argv.slice(2), {
   }
 })
 
-void (async () => {
+;(async () => {
   if (!argv.force) {
     const npmVersion = await checkNpmVersion()
     if (parseInt(npmVersion, 10) < 7) {

@@ -8,7 +8,9 @@
   "scripts": {
     "version": "changes --commits",
     "postversion": "git push --follow-tags && npm publish --access public",
-    "test": "./test/test.sh"
+    "pretest": "cp cmd.js ./test/app1/cmd.js",
+    "test": "./test/test.sh",
+    "posttest": "standard"
   },
   "repository": {
     "type": "git",
@@ -24,6 +26,7 @@
     "minimist": "^1.2.5"
   },
   "devDependencies": {
-    "@studio/changes": "^2.2.0"
+    "@studio/changes": "^2.2.0",
+    "standard": "^16.0.3"
   }
 }
