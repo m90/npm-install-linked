@@ -14,5 +14,5 @@ jobs:
        run: npm ci
      - name: Run tests using npm 7
        run: npm i npm@7 -g && npm t
-     - name: Run tests using npm 7
+     - name: Run tests using npm 6
        run: npm i npm@6 -g && npm t
