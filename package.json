@@ -7,7 +7,8 @@
   },
   "scripts": {
     "version": "changes --commits",
-    "postversion": "git push --follow-tags && npm publish --access public"
+    "postversion": "git push --follow-tags && npm publish --access public",
+    "test": "./test/test.sh"
   },
   "repository": {
     "type": "git",

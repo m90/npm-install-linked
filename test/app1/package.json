@@ -1,0 +1,13 @@
+{
+  "name": "app1",
+  "scripts": {
+    "postinstall": "npm-install-linked",
+    "start": "./cmd.js"
+  },
+  "dependencies": {
+    "@monorepo/pkg1": "file:./../packages/pkg1"
+  },
+  "devDependencies": {
+    "npm-install-linked": "^0.1.0"
+  }
+}
