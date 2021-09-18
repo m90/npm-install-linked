@@ -8,6 +8,8 @@
 const path = require('path')
 const cp = require('child_process')
 
+const pkg = require('./package.json')
+
 const argv = require('minimist')(process.argv.slice(2), {
   alias: {
     walk: 'W',
@@ -38,7 +40,7 @@ const argv = require('minimist')(process.argv.slice(2), {
   return `Installed transient dependencies for ${fileDeps.length} "file:" package(s)`
 })()
   .then((result) => {
-    console.log('install-file-deps: %s', result)
+    console.log('%s: %s', pkg.name, result)
     process.exit(0)
   })
   .catch((err) => {
