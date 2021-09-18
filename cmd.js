@@ -1,11 +1,16 @@
 #!/usr/bin/env node
 
+/**
+ * Copyright 2021 - Frederik Ring <frederik.ring@gmail.com>
+ * SPDX-License-Identifier: MPL-2.0
+ */
+
 const path = require('path')
 const cp = require('child_process')
 
 const argv = require('minimist')(process.argv.slice(2), {
   alias: {
-    walk: 'T',
+    walk: 'W',
     force: 'F'
   },
   default: {
