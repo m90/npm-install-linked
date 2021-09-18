@@ -17,12 +17,12 @@ Install the package as a dev dependency:
 npm i npm-install-linked -D
 ```
 
-and put it in your `package.json`s `preinstall` script:
+and put it in your `package.json`s `postinstall` script:
 
 ```json
 {
   "scripts": {
-    "preinstall": "npm-install-linked"
+    "postinstall": "npm-install-linked"
   }
 }
 ```
