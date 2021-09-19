@@ -10,6 +10,8 @@ const cp = require('child_process')
 
 const pkg = require('./package.json')
 
+const FILE_RE = /^file:/
+
 const argv = require('minimist')(process.argv.slice(2), {
   alias: {
     walk: 'W',
@@ -21,23 +23,27 @@ const argv = require('minimist')(process.argv.slice(2), {
   }
 })
 
-;(async () => {
+;(async function main () {
   if (!argv.force) {
-    const npmVersion = await checkNpmVersion()
-    if (parseInt(npmVersion, 10) < 7) {
-      return `npm version in use is ${npmVersion}, no need to install nested dependencies`
+    const versionString = await getNpmVersion()
+    if (parseInt(versionString, 10) < 7) {
+      return `npm version in use is ${versionString}, no need to install nested dependencies`
     }
   }
 
-  let fileDeps = walkFileDeps(process.cwd(), argv.walk)
+  let fileDeps = collectFileDeps(process.cwd(), argv.walk)
   fileDeps = fileDeps.sort((a, b) => a.depth > b.depth ? -1 : 1)
   for (const dep of fileDeps) {
     if (dep.location.indexOf(process.cwd()) === 0) {
+      // npm 7 installs dependencies for local packages within the same
+      // fs root just fine so they can be skipped.
       continue
     }
     await install(dep.location)
   }
-  return `Installed transient dependencies for ${fileDeps.length} "file:" package(s)`
+  return fileDeps.length
+    ? `Installed transient dependencies for ${fileDeps.length} "file:" package(s)`
+    : 'No "file:" packages were found, nothing to do.'
 })()
   .then((result) => {
     console.log('%s: %s', pkg.name, result)
@@ -48,16 +54,16 @@ const argv = require('minimist')(process.argv.slice(2), {
     process.exit(1)
   })
 
-function walkFileDeps (root, walk, depth = 0) {
-  const pkg = require(path.resolve(root, './package.json'))
-  const deps = Object.assign({}, pkg.dependencies, pkg.devDependencies)
+function collectFileDeps (root, walk, depth = 0) {
+  const { dependencies, devDependencies } = require(path.resolve(root, './package.json'))
+  const deps = Object.assign({}, dependencies, devDependencies)
   let fileDeps = []
-  for (const key in deps) {
-    if (/^file:/.test(deps[key])) {
-      const location = path.resolve(root, deps[key].replace(/^file:/, ''))
+  for (const dep of Object.values(deps)) {
+    if (FILE_RE.test(dep)) {
+      const location = path.resolve(root, dep.replace(FILE_RE, ''))
       fileDeps.push({ location, depth })
       if (walk) {
-        fileDeps = [...fileDeps, ...walkFileDeps(location, walk, depth + 1)]
+        fileDeps = [...fileDeps, ...collectFileDeps(location, walk, depth + 1)]
       }
     }
   }
@@ -69,9 +75,14 @@ function install (root) {
     const npm = cp.exec('npm install', {
       cwd: root
     })
+    npm.on('error', function (err) {
+      reject(err)
+    })
     npm.on('exit', function (code) {
       if (code) {
-        reject(new Error(`Installing dependencies for "${root}" failed with exit code ${code}`))
+        reject(
+          new Error(`Installing dependencies for "${root}" failed with exit code ${code}`)
+        )
         return
       }
       resolve()
@@ -79,16 +90,21 @@ function install (root) {
   })
 }
 
-function checkNpmVersion () {
+function getNpmVersion () {
   return new Promise(function (resolve, reject) {
     const npm = cp.exec('npm -v')
     let buf = ''
     npm.stdout.on('data', function (data) {
       buf += data
     })
+    npm.on('error', function (err) {
+      reject(err)
+    })
     npm.on('exit', function (code) {
       if (code) {
-        reject(new Error(`Determining npm version in use failed with exit code ${code}`))
+        reject(
+          new Error(`Determining npm version in use failed with exit code ${code}`)
+        )
         return
       }
       resolve(buf.trim())

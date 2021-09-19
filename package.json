@@ -8,7 +8,6 @@
   "scripts": {
     "version": "changes --commits",
     "postversion": "git push --follow-tags && npm publish --access public",
-    "pretest": "cp cmd.js ./test/app1/cmd.js",
     "test": "./test/test.sh",
     "posttest": "standard"
   },
