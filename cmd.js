@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 
 /**
- * Copyright 2021 - Frederik Ring <frederik.ring@gmail.com>
+ * Copyright 2021-2022 - Frederik Ring <frederik.ring@gmail.com>
  * SPDX-License-Identifier: MPL-2.0
  */
 
 const path = require('path')
+const fs = require('fs')
 const cp = require('child_process')
 
 const pkg = require('./package.json')
@@ -15,11 +16,13 @@ const FILE_RE = /^file:/
 const argv = require('minimist')(process.argv.slice(2), {
   alias: {
     walk: 'W',
-    force: 'F'
+    force: 'F',
+    'use-lockfile': 'L'
   },
   default: {
     walk: false,
-    force: false
+    force: false,
+    'use-lockfile': false
   }
 })
 
@@ -39,7 +42,7 @@ const argv = require('minimist')(process.argv.slice(2), {
       // fs root just fine so they can be skipped.
       continue
     }
-    await install(dep.location)
+    await install(dep.location, argv['use-lockfile'])
   }
   return fileDeps.length
     ? `Installed transient dependencies for ${fileDeps.length} "file:" package(s)`
@@ -70,9 +73,13 @@ function collectFileDeps (root, walk, depth = 0) {
   return fileDeps
 }
 
-function install (root) {
+function install (root, useLockfile = false) {
   return new Promise(function (resolve, reject) {
-    const npm = cp.exec('npm install', {
+    let cmd = 'npm i'
+    if (useLockfile && fs.existsSync(path.resolve(root, './package-lock.json'))) {
+      cmd = 'npm ci'
+    }
+    const npm = cp.exec(cmd, {
       cwd: root
     })
     npm.on('error', function (err) {

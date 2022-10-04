@@ -29,7 +29,12 @@ and put it in your `package.json`s `postinstall` script:
 
 ## Options
 
-Two options can be passed to the CLI tool:
+Three options can be passed to the CLI tool:
+
+### `--use-lockfile`, `-L`
+
+When given, `npm ci` will be run in the context of the transient dependency in case a `package-lock.json` is found.
+If no lockfile is found, `npm i` will be used instead.
 
 ### `--force`, `-F`
 
