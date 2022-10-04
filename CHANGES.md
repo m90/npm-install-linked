@@ -1,5 +1,12 @@
 # Changes
 
+## 0.3.0
+
+- [`7aa4feb`](https://github.com/m90/npm-install-linked/commit/7aa4feb5a743ca7895639854e7577a0e3a1629d5)
+  Add option to install from lockfile when present
+- [`561b219`](https://github.com/m90/npm-install-linked/commit/561b219e53c0516dce6fc1a94a6f5e39c0ce0440)
+  improve naming, consolidate test setup and teardown
+
 ## 0.2.1
 
 - [`5e43245`](https://github.com/m90/npm-install-linked/commit/5e43245131b4ae78950b19d9f4b344e1d57bec76)
